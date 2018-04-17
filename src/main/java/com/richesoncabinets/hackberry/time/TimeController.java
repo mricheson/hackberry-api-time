@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 public class TimeController {
 
 	private static final String TSHEETS_TOKEN = "S.4__5bef0f3becb66d52b38539bea60456fa8a76b06a";
-	private static final String URL = "https://jsonplaceholder.typicode.com/posts/1";
+	private static final String URL = "https://rest.tsheets.com/api/v1/timesheets?start_date=%s&end_date=%s&supplemental_data=yes";
 
 	@RequestMapping("/test")
 	public String test() {
@@ -45,7 +45,7 @@ public class TimeController {
 
 		System.out.println(url);
 
-		ResponseEntity<String> s = restTemplate.exchange(URL, HttpMethod.GET, null, String.class);
+		ResponseEntity<String> s = restTemplate.exchange("https://rest.tsheets.com/api/v1/timesheets?start_date=2018-04-13&end_date=2018-04-13&supplemental_data=yes", HttpMethod.GET, null, String.class);
 		return s.getBody();
 
 	}
