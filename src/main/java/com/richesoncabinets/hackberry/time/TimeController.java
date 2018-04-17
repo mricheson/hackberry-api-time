@@ -11,25 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.richesoncabinets.hackberry.time.model.TimesheetsResult;
+import com.richesoncabinets.hackberry.time.model.tsheets.TimesheetsResult;
 
 @RestController
 public class TimeController {
 
 	private static final String TSHEETS_TOKEN = "S.4__5bef0f3becb66d52b38539bea60456fa8a76b06a";
 	private static final String URL = "https://rest.tsheets.com/api/v1/timesheets?start_date=%s&end_date=%s&supplemental_data=yes";
-
-	@RequestMapping("/test")
-	public String test() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer " + TSHEETS_TOKEN);
-		
-		HttpEntity<String> request = new HttpEntity<String>(headers);
-		ResponseEntity<String> response = new RestTemplate().exchange("https://rest.tsheets.com/api/v1/timesheets?start_date=%s&end_date=%s&supplemental_data=yes", HttpMethod.GET, request, String.class);
-		Object account = response.getBody();
-		
-		return "success";
-	}
 
 	@RequestMapping("/time")
 	public TimesheetsResult getTimesheets(@RequestParam(value = "date", defaultValue = "") String date) {

@@ -1,4 +1,4 @@
-package com.richesoncabinets.hackberry.time.model;
+package com.richesoncabinets.hackberry.time.model.tsheets;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
