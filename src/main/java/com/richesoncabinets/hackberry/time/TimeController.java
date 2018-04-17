@@ -33,8 +33,7 @@ public class TimeController {
 	public String getTimesheets(@RequestParam(value = "date", defaultValue = "") String date) {
 
 		HttpHeaders header = new HttpHeaders();
-		header.add("Authorization",
-				Base64.getEncoder().encodeToString(String.format("Bearer %s", TSHEETS_TOKEN).getBytes()));
+		header.add("Authorization",	"Bearer " + TSHEETS_TOKEN);
 
 		HttpEntity<String> request = new HttpEntity<>("parameters", header);
 
