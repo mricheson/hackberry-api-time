@@ -19,7 +19,7 @@ public class TimesheetService {
 
 
 	public List<UserTimesheet> getUserTimesheetsForDay(LocalDate date) {
-		String query = String.format("start_date=%1$s&end_date=%1$s&supplemental_data=yes", date.toString());
+		String query = String.format("on_the_clock=both&start_date=%1$s&end_date=%1$s&supplemental_data=yes", date.toString());
 		TimesheetsResult  timesheets = tsheetsService.getTimesheets(query);
 		
 		UsersResult users = tsheetsService.getUsers("");
