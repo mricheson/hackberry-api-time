@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.richesoncabinets.hackberry.time.model.TimesheetsResult;
+
 @RestController
 public class TimeController {
 
@@ -30,7 +32,7 @@ public class TimeController {
 	}
 
 	@RequestMapping("/time")
-	public String getTimesheets(@RequestParam(value = "date", defaultValue = "") String date) {
+	public TimesheetsResult getTimesheets(@RequestParam(value = "date", defaultValue = "") String date) {
 
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization",	"Bearer " + TSHEETS_TOKEN);
@@ -44,7 +46,7 @@ public class TimeController {
 
 		System.out.println(url);
 
-		ResponseEntity<String> s = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+		ResponseEntity<TimesheetsResult> s = restTemplate.exchange(url, HttpMethod.GET, request, TimesheetsResult.class);
 		return s.getBody();
 
 	}
