@@ -16,6 +16,8 @@ public class UserTimesheetBuilder {
 	public static List<UserTimesheet> of(Collection<User> users, Collection<Timesheet> timesheets) {
 		Map<Long, List<Timesheet>> userMappedTimesheets = timesheets.stream()
 				.collect(Collectors.groupingBy(Timesheet::getUser_id));
+		
+		userMappedTimesheets.forEach((k,v) -> System.out.println(k + " : "+ v.size()));
 
 		return users.stream().map(user -> UserTimesheetBuilder.of(user, userMappedTimesheets.get(user.getId())))
 				.collect(Collectors.toList());
