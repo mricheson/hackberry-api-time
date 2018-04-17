@@ -44,7 +44,7 @@ public class TimeController {
 
 		System.out.println(url);
 
-		ResponseEntity<String> s = restTemplate.exchange("https://rest.tsheets.com/api/v1/timesheets?start_date=2018-04-13&end_date=2018-04-13&supplemental_data=yes", HttpMethod.GET, request, String.class);
+		ResponseEntity<String> s = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 		return s.getBody();
 
 	}
