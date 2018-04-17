@@ -25,9 +25,8 @@ public class TsheetsService {
 	private String buildUrl(String endpoint, String query) {
 		return tsheetsConfiguration.getRootUrl() + endpoint + (StringUtils.isEmpty(query) ? "" : "?" + query);
 	}
-	
-	private HttpEntity<String> buildHeaders()
-	{
+
+	private HttpEntity<String> buildHeaders() {
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization", "Bearer " + tsheetsConfiguration.getToken());
 
@@ -35,7 +34,18 @@ public class TsheetsService {
 	}
 
 	public TimesheetsResult getTimesheets(String queryString) {
-		return executeGet("timesheets", queryString, TimesheetsResult.class);
+		queryString = queryString + (queryString.length() == 0 ? "" : "&") + "per_page=50";
+		System.out.println(queryString);
+		TimesheetsResult cumulativeResult = executeGet("timesheets", queryString, TimesheetsResult.class);
+		TimesheetsResult result = cumulativeResult;
+		for (int page = 2; result.getResults().getTimesheets().size() == 50; page++) {
+			String pagedQuery = queryString + "&page=" + page;
+			System.out.println(pagedQuery);
+			result = executeGet("timesheets", pagedQuery, TimesheetsResult.class);
+			cumulativeResult.merge(result);
+		}
+
+		return cumulativeResult;
 	}
 
 	public UsersResult getUsers(String queryString) {

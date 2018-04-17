@@ -24,4 +24,10 @@ public class SupplementalData {
 	public void setUsers(Map<String, User> users) {
 		this.users = users;
 	}
+
+	public void merge(SupplementalData other) {
+		
+		this.jobcodes.putAll(other.getJobcodes());
+		this.users.putAll(other.getUsers());
+	}
 }

@@ -24,5 +24,12 @@ public abstract class Result<T> {
 		this.supplemental_data = supplemental_data;
 	}
 	
+	protected abstract void merge(T otherResults);
 	
+	public void merge(Result<T> otherResult)
+	{
+		 merge(otherResult.getResults());
+		 more = this.more || otherResult.more;
+		 supplemental_data.merge(otherResult.supplemental_data);
+	}
 }
