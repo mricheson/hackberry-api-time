@@ -42,8 +42,8 @@ public class UserTimesheetBuilder {
 		if (timesheets != null) {
 			userTimesheet.setTimesheets(timesheets.stream().sorted(TIMESHEET_COMPARATOR)
 					.collect(Collectors.toList()));
-			userTimesheet.setClockInTime(
-					userTimesheet.getTimesheets().stream().map(Timesheet::getStart).findFirst().orElse(null));
+//			userTimesheet.setClockInTime(
+//					userTimesheet.getTimesheets().stream().map(Timesheet::getStart).findFirst().orElse(null));
 		}
 		return userTimesheet;
 	}
