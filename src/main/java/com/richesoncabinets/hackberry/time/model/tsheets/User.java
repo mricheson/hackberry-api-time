@@ -16,7 +16,7 @@ public class User {
 	private String email;
 	private boolean email_verified;
 	private String payroll_id;
-	private LocalDate hire_date;
+//	private LocalDate hire_date;
 //	private LocalDate term_date;
 	private ZonedDateTime last_modified;
 	private ZonedDateTime last_active;
@@ -99,12 +99,12 @@ public class User {
 	public void setPayroll_id(String payroll_id) {
 		this.payroll_id = payroll_id;
 	}
-	public LocalDate getHire_date() {
-		return hire_date;
-	}
-	public void setHire_date(LocalDate hire_date) {
-		this.hire_date = hire_date;
-	}
+//	public LocalDate getHire_date() {
+//		return hire_date;
+//	}
+//	public void setHire_date(LocalDate hire_date) {
+//		this.hire_date = hire_date;
+//	}
 //	public LocalDate getTerm_date() {
 //		return term_date;
 //	}
