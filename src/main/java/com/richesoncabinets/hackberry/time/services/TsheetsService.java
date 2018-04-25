@@ -1,5 +1,8 @@
 package com.richesoncabinets.hackberry.time.services;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.richesoncabinets.hackberry.time.configuration.TsheetsConfiguration;
+import com.richesoncabinets.hackberry.time.model.tsheets.Result;
 import com.richesoncabinets.hackberry.time.model.tsheets.TimesheetsResult;
 import com.richesoncabinets.hackberry.time.model.tsheets.UsersResult;
 
@@ -32,23 +36,30 @@ public class TsheetsService {
 
 		return new HttpEntity<>("parameters", header);
 	}
-
-	public TimesheetsResult getTimesheets(String queryString) {
+	
+	private <R, T extends Result<R>> T getResultsFromAllPages(String endpoint, String queryString, Class<T> resultClass, Function<R,Integer> pageSize)
+	{
 		queryString = queryString + (queryString.length() == 0 ? "" : "&") + "per_page=50";
-		System.out.println(queryString);
-		TimesheetsResult cumulativeResult = executeGet("timesheets", queryString, TimesheetsResult.class);
-		TimesheetsResult result = cumulativeResult;
-		for (int page = 2; result.getResults().getTimesheets().size() == 50; page++) {
+
+		T cumulativeResult = executeGet(endpoint, queryString, resultClass);
+		T result = cumulativeResult;
+		
+		for (int page = 2; pageSize.apply(result.getResults()) == 50; page++) {
 			String pagedQuery = queryString + "&page=" + page;
 			System.out.println(pagedQuery);
-			result = executeGet("timesheets", pagedQuery, TimesheetsResult.class);
+			result = executeGet(endpoint, pagedQuery, resultClass);
 			cumulativeResult.merge(result);
 		}
 
 		return cumulativeResult;
 	}
+	
+
+	public TimesheetsResult getTimesheets(String queryString) {
+		return getResultsFromAllPages("timesheets", queryString, TimesheetsResult.class, u -> u.getTimesheets().size());
+	}
 
 	public UsersResult getUsers(String queryString) {
-		return executeGet("users", queryString, UsersResult.class);
+		return getResultsFromAllPages("users", queryString, UsersResult.class, u -> u.getUsers().size());
 	}
 }
