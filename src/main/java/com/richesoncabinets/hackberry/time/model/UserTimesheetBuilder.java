@@ -11,13 +11,13 @@ import com.richesoncabinets.hackberry.time.model.tsheets.User;
 
 public class UserTimesheetBuilder {
 	private static final Comparator<Timesheet> TIMESHEET_COMPARATOR = (time1, time2) -> {
-		if (time1 == null && time2 == null)
+		if (time1.getStart() == null && time2.getStart() == null)
 			return 0;
 
-		if (time1 == null)
+		if (time1.getStart() == null)
 			return -1;
 
-		if (time2 == null)
+		if (time2.getStart() == null)
 			return 1;
 
 		return time1.getStart().compareTo(time2.getStart());
