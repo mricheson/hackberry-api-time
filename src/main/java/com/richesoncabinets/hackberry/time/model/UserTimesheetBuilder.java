@@ -52,6 +52,9 @@ public class UserTimesheetBuilder {
 		userTimesheet.setUser(user);
 
 		Predicate<Timesheet> timesheetJobCodeClassifier = t -> {
+			if (t.getJobcode_id() == 0)
+				return false; 
+			
 			Jobcode jobcode = jobCodes.get(Long.toString(t.getJobcode_id()));
 			if (jobcode != null && (jobcode.getType().equals(JOB_CODE_TYPE_REGULAR)
 					|| tsheetsConfiguration.getBreakCodes().contains(jobcode.getShort_code())))
