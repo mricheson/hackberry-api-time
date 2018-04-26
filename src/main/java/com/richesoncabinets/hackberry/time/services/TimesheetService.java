@@ -35,6 +35,8 @@ public class TimesheetService {
 
 			TimesheetsResult timesheets = timesheetsFuture.get();
 			UsersResult users = usersFuture.get();
+			
+			users.getResults().getUsers().putAll(timesheets.getSupplemental_data().getUsers());
 
 			return DailyAttendanceReport.of(userTimesheetBuilder.of(users.getResults().getUsers().values(),
 					timesheets.getResults().getTimesheets().values(), timesheets.getSupplemental_data().getJobcodes()),
