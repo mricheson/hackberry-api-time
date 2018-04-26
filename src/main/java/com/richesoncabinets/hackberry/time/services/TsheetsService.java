@@ -36,24 +36,28 @@ public class TsheetsService {
 
 		return new HttpEntity<>("parameters", header);
 	}
-	
-	private <R, T extends Result<R>> T getResultsFromAllPages(String endpoint, String queryString, Class<T> resultClass, Function<R,Integer> pageSize)
-	{
+
+	private <R, T extends Result<R>> T getResultsFromAllPages(String endpoint, String queryString, Class<T> resultClass,
+			Function<R, Integer> pageSize) {
 		queryString = queryString + (queryString.length() == 0 ? "" : "&") + "per_page=50";
 
 		T cumulativeResult = executeGet(endpoint, queryString, resultClass);
 		T result = cumulativeResult;
-		
-		for (int page = 2; pageSize.apply(result.getResults()) == 50; page++) {
-			String pagedQuery = queryString + "&page=" + page;
-			System.out.println(pagedQuery);
-			result = executeGet(endpoint, pagedQuery, resultClass);
-			cumulativeResult.merge(result);
+
+		try {
+			for (int page = 2; pageSize.apply(result.getResults()) == 50; page++) {
+				String pagedQuery = queryString + "&page=" + page;
+				System.out.println(pagedQuery);
+				result = executeGet(endpoint, pagedQuery, resultClass);
+				cumulativeResult.merge(result);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Unable to get next page of results.  This might be because there are exactly 50 results.");
 		}
 
 		return cumulativeResult;
 	}
-	
 
 	public TimesheetsResult getTimesheets(String queryString) {
 		return getResultsFromAllPages("timesheets", queryString, TimesheetsResult.class, u -> u.getTimesheets().size());
