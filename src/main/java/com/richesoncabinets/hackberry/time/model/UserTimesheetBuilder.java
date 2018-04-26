@@ -10,10 +10,15 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.richesoncabinets.hackberry.time.configuration.TsheetsConfiguration;
 import com.richesoncabinets.hackberry.time.model.tsheets.Jobcode;
 import com.richesoncabinets.hackberry.time.model.tsheets.Timesheet;
 import com.richesoncabinets.hackberry.time.model.tsheets.User;
 
+@Service
 public class UserTimesheetBuilder {
 	private static final String JOB_CODE_TYPE_REGULAR = "regular";
 	private static final Comparator<Timesheet> TIMESHEET_COMPARATOR = (time1, time2) -> {
@@ -29,28 +34,27 @@ public class UserTimesheetBuilder {
 		return time1.getStartAsZonedDateTime().get().compareTo(time2.getStartAsZonedDateTime().get());
 	};
 
-	private UserTimesheetBuilder() {
-		// do nothing
-	}
+	@Autowired
+	private TsheetsConfiguration tsheetsConfiguration;
 
-	public static List<UserTimesheet> of(Collection<User> users, Collection<Timesheet> timesheets,
+	public List<UserTimesheet> of(Collection<User> users, Collection<Timesheet> timesheets,
 			Map<String, Jobcode> jobCodes) {
 		Map<Long, List<Timesheet>> userMappedTimesheets = timesheets.stream()
 				.collect(Collectors.groupingBy(Timesheet::getUser_id));
 
-		return users.stream()
-				.map(user -> UserTimesheetBuilder.of(user, userMappedTimesheets.get(user.getId()), jobCodes))
+		return users.stream().map(user -> of(user, userMappedTimesheets.get(user.getId()), jobCodes))
 				.sorted((a, b) -> a.getUser().getLast_name().compareToIgnoreCase(b.getUser().getLast_name()))
 				.collect(Collectors.toList());
 	}
 
-	public static UserTimesheet of(User user, Collection<Timesheet> timesheets, Map<String, Jobcode> jobCodes) {
+	public UserTimesheet of(User user, Collection<Timesheet> timesheets, Map<String, Jobcode> jobCodes) {
 		UserTimesheet userTimesheet = new UserTimesheet();
 		userTimesheet.setUser(user);
 
 		Predicate<Timesheet> timesheetJobCodeClassifier = t -> {
 			Jobcode jobcode = jobCodes.get(Long.toString(t.getJobcode_id()));
-			if (jobcode != null && jobcode.getType().equals(JOB_CODE_TYPE_REGULAR))
+			if (jobcode != null && (jobcode.getType().equals(JOB_CODE_TYPE_REGULAR)
+					|| tsheetsConfiguration.getBreakCodes().contains(jobcode.getShort_code())))
 				return false;
 
 			return true;
@@ -67,7 +71,7 @@ public class UserTimesheetBuilder {
 				userTimesheet.setClockInTime(punches.stream().map(Timesheet::getStartAsZonedDateTime)
 						.filter(Optional::isPresent).map(Optional::get).findFirst().orElse(null));
 			}
-			
+
 			userTimesheet.setExceptions(timesheetsPartitionedByExceptionJobCode.get(true));
 		}
 
