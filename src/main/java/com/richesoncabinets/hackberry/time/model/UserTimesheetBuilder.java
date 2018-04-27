@@ -97,8 +97,14 @@ public class UserTimesheetBuilder {
 		}
 
 		if (timesheet.getExceptions() != null) {
-			codes.addAll(timesheet.getExceptions().stream().map(Timesheet::getJobcode_id).peek(System.out::print).map(l -> l.toString()).peek(System.out::print)
-					.map(k -> timesheet.getCodes().get(k)).peek(System.out::print).filter(j -> j != null).map(j -> {
+			timesheet.getExceptions().stream()
+					.map(Timesheet::getJobcode_id)
+					.peek(System.out::print)
+					.map(l -> l.toString())
+					.peek(System.out::print)
+					.map(k -> timesheet.getCodes().get(k)).peek(System.out::print)
+					.filter(j -> j != null)
+					.map(j -> {
 						switch (j.getName()) {
 						case "Holiday":
 							return AttendanceCode.HOLIDAY;
@@ -115,7 +121,10 @@ public class UserTimesheetBuilder {
 						default:
 							return null;
 						}
-					}).filter(j -> j != null).collect(Collectors.toList()));
+					})
+					.filter(j -> j != null)
+					.forEach(System.out::println);
+//					.collect(Collectors.toList());
 		}
 
 		return codes;
