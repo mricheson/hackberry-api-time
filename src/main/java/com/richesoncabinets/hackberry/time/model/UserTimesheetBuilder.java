@@ -95,6 +95,10 @@ public class UserTimesheetBuilder {
 				codes.add(AttendanceCode.LATE);
 			}
 		}
+		else
+		{
+			codes.add(AttendanceCode.ABSENT);
+		}
 
 		if (timesheet.getExceptions() != null) {
 			timesheet.getExceptions().stream()
