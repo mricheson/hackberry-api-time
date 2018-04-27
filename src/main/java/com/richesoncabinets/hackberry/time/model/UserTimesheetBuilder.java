@@ -80,12 +80,12 @@ public class UserTimesheetBuilder {
 			userTimesheet.setExceptions(timesheetsPartitionedByExceptionJobCode.get(true));
 		}
 
-		userTimesheet.setAttendanceCodes(evaluateAttendance(userTimesheet));
+		userTimesheet.setAttendanceCodes(evaluateAttendance(userTimesheet,jobCodes));
 
 		return userTimesheet;
 	}
 
-	public List<AttendanceCode> evaluateAttendance(UserTimesheet timesheet) {
+	public List<AttendanceCode> evaluateAttendance(UserTimesheet timesheet, Map<String,Jobcode> jobcodes) {
 		List<AttendanceCode> codes = new ArrayList<>();
 
 		if (timesheet.getClockInTime() != null) {
@@ -99,32 +99,29 @@ public class UserTimesheetBuilder {
 		if (timesheet.getExceptions() != null) {
 			timesheet.getExceptions().stream()
 					.map(Timesheet::getJobcode_id)
-					.peek(System.out::print)
 					.map(l -> l.toString())
-//					.peek(System.out::print)
-//					.map(k -> timesheet.getCodes().get(k)).peek(System.out::print)
-//					.filter(j -> j != null)
-//					.map(j -> {
-//						switch (j.getName()) {
-//						case "Holiday":
-//							return AttendanceCode.HOLIDAY;
-//						case "Paid Vacation":
-//							return AttendanceCode.VACATION;
-//						case "Sick Day":
-//							return AttendanceCode.SICK;
-//						case "Call-In":
-//							return AttendanceCode.CALLED_IN;
-//						case "Personal Day - APPROVED":
-//							return AttendanceCode.PERSONAL_DAY_APPROVED;
-//						case "Personal Day - NOT APPROVED":
-//							return AttendanceCode.PERSONAL_DAY_UNAPPROVED;
-//						default:
-//							return null;
-//						}
-//					})
-//					.filter(j -> j != null)
-					.forEach(System.out::println);
-//					.collect(Collectors.toList());
+					.map(k -> jobcodes.get(k))
+					.filter(j -> j != null)
+					.map(j -> {
+						switch (j.getName()) {
+						case "Holiday":
+							return AttendanceCode.HOLIDAY;
+						case "Paid Vacation":
+							return AttendanceCode.VACATION;
+						case "Sick Day":
+							return AttendanceCode.SICK;
+						case "Call-In":
+							return AttendanceCode.CALLED_IN;
+						case "Personal Day - APPROVED":
+							return AttendanceCode.PERSONAL_DAY_APPROVED;
+						case "Personal Day - NOT APPROVED":
+							return AttendanceCode.PERSONAL_DAY_UNAPPROVED;
+						default:
+							return null;
+						}
+					})
+					.filter(j -> j != null)
+					.collect(Collectors.toList());
 		}
 
 		return codes;

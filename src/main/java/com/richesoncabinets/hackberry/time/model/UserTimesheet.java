@@ -13,7 +13,6 @@ public class UserTimesheet {
 	private ZonedDateTime clockInTime;
 	private List<Timesheet> timesheets;
 	private List<Timesheet> exceptions;
-	private Map<String,Jobcode> codes;
 	private List<AttendanceCode> attendanceCodes;
 	
 	public User getUser() {
@@ -39,12 +38,6 @@ public class UserTimesheet {
 	}
 	public void setExceptions(List<Timesheet> exceptions) {
 		this.exceptions = exceptions;
-	}
-	public Map<String,Jobcode> getCodes() {
-		return codes;
-	}
-	public void setCodes(Map<String,Jobcode> codes) {
-		this.codes = codes;
 	}
 	public List<AttendanceCode> getAttendanceCodes() {
 		return attendanceCodes;
