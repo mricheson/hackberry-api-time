@@ -14,6 +14,7 @@ public class UserTimesheet {
 	private List<Timesheet> timesheets;
 	private List<Timesheet> exceptions;
 	private Map<String,Jobcode> codes;
+	private List<AttendanceCode> attendanceCodes;
 	
 	public User getUser() {
 		return user;
@@ -44,5 +45,11 @@ public class UserTimesheet {
 	}
 	public void setCodes(Map<String,Jobcode> codes) {
 		this.codes = codes;
+	}
+	public List<AttendanceCode> getAttendanceCodes() {
+		return attendanceCodes;
+	}
+	public void setAttendanceCodes(List<AttendanceCode> attendanceCodes) {
+		this.attendanceCodes = attendanceCodes;
 	}
 }

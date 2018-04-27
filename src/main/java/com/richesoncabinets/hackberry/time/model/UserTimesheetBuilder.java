@@ -1,12 +1,12 @@
 package com.richesoncabinets.hackberry.time.model;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -53,11 +53,11 @@ public class UserTimesheetBuilder {
 
 		Predicate<Timesheet> timesheetJobCodeClassifier = t -> {
 			if (t.getJobcode_id() == 0)
-				return false; 
-			
+				return false;
+
 			Jobcode jobcode = jobCodes.get(Long.toString(t.getJobcode_id()));
 			if (jobcode != null && (jobcode.getType().equals(JOB_CODE_TYPE_REGULAR)
-					|| tsheetsConfiguration.getBreakCodes().contains(jobcode.getShort_code())))
+					|| tsheetsConfiguration.getCodes().getBreakCodes().contains(jobcode.getShort_code())))
 				return false;
 
 			return true;
@@ -78,6 +78,42 @@ public class UserTimesheetBuilder {
 			userTimesheet.setExceptions(timesheetsPartitionedByExceptionJobCode.get(true));
 		}
 
+		userTimesheet.setAttendanceCodes(evaluateAttendance(userTimesheet));
+
 		return userTimesheet;
+	}
+
+	public List<AttendanceCode> evaluateAttendance(UserTimesheet timesheet) {
+		List<AttendanceCode> codes = new ArrayList<>();
+
+		if (timesheet.getClockInTime() != null) {
+			if (timesheet.getClockInTime().toLocalTime().isBefore(LocalTime.of(5, 0, 0, 0))) {
+				codes.add(AttendanceCode.EARLY);
+			} else if (timesheet.getClockInTime().toLocalTime().isBefore(LocalTime.of(7, 30, 0, 0))) {
+				codes.add(AttendanceCode.LATE);
+			}
+		}
+
+		codes.addAll(timesheet.getExceptions().stream().map(Timesheet::getJobcode_id).map(l -> l.toString())
+				.map(k -> timesheet.getCodes().get(k)).filter(j -> j != null).map(j -> {
+					switch (j.getName()) {
+					case "Holiday":
+						return AttendanceCode.HOLIDAY;
+					case "Paid Vacation":
+						return AttendanceCode.VACATION;
+					case "Sick Day":
+						return AttendanceCode.SICK;
+					case "Call-In":
+						return AttendanceCode.CALLED_IN;
+					case "Personal Day - APPROVED" :
+						return AttendanceCode.PERSONAL_DAY_APPROVED;
+					case "Personal Day - NOT APPROVED":
+						return AttendanceCode.PERSONAL_DAY_UNAPPROVED;
+					default:
+						return null;
+					}
+				}).filter(j -> j != null).collect(Collectors.toList()));
+
+		return codes;
 	}
 }
