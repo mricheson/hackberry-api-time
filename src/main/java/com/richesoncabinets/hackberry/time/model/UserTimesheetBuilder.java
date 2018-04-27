@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -95,8 +97,8 @@ public class UserTimesheetBuilder {
 		}
 
 		if (timesheet.getExceptions() != null) {
-			codes.addAll(timesheet.getExceptions().stream().map(Timesheet::getJobcode_id).map(l -> l.toString())
-					.map(k -> timesheet.getCodes().get(k)).filter(j -> j != null).map(j -> {
+			codes.addAll(timesheet.getExceptions().stream().map(Timesheet::getJobcode_id).peek(System.out::print).map(l -> l.toString()).peek(System.out::print)
+					.map(k -> timesheet.getCodes().get(k)).peek(System.out::print).filter(j -> j != null).map(j -> {
 						switch (j.getName()) {
 						case "Holiday":
 							return AttendanceCode.HOLIDAY;
