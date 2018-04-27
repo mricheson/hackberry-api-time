@@ -91,7 +91,7 @@ public class UserTimesheetBuilder {
 		if (timesheet.getClockInTime() != null) {
 			if (timesheet.getClockInTime().toLocalTime().isBefore(LocalTime.of(5, 0, 0, 0))) {
 				codes.add(AttendanceCode.EARLY);
-			} else if (timesheet.getClockInTime().toLocalTime().isBefore(LocalTime.of(7, 30, 0, 0))) {
+			} else if (timesheet.getClockInTime().toLocalTime().isAfter(LocalTime.of(7, 30, 0, 0))) {
 				codes.add(AttendanceCode.LATE);
 			}
 		}
