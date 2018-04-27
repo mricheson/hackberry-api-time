@@ -101,28 +101,28 @@ public class UserTimesheetBuilder {
 					.map(Timesheet::getJobcode_id)
 					.peek(System.out::print)
 					.map(l -> l.toString())
-					.peek(System.out::print)
-					.map(k -> timesheet.getCodes().get(k)).peek(System.out::print)
-					.filter(j -> j != null)
-					.map(j -> {
-						switch (j.getName()) {
-						case "Holiday":
-							return AttendanceCode.HOLIDAY;
-						case "Paid Vacation":
-							return AttendanceCode.VACATION;
-						case "Sick Day":
-							return AttendanceCode.SICK;
-						case "Call-In":
-							return AttendanceCode.CALLED_IN;
-						case "Personal Day - APPROVED":
-							return AttendanceCode.PERSONAL_DAY_APPROVED;
-						case "Personal Day - NOT APPROVED":
-							return AttendanceCode.PERSONAL_DAY_UNAPPROVED;
-						default:
-							return null;
-						}
-					})
-					.filter(j -> j != null)
+//					.peek(System.out::print)
+//					.map(k -> timesheet.getCodes().get(k)).peek(System.out::print)
+//					.filter(j -> j != null)
+//					.map(j -> {
+//						switch (j.getName()) {
+//						case "Holiday":
+//							return AttendanceCode.HOLIDAY;
+//						case "Paid Vacation":
+//							return AttendanceCode.VACATION;
+//						case "Sick Day":
+//							return AttendanceCode.SICK;
+//						case "Call-In":
+//							return AttendanceCode.CALLED_IN;
+//						case "Personal Day - APPROVED":
+//							return AttendanceCode.PERSONAL_DAY_APPROVED;
+//						case "Personal Day - NOT APPROVED":
+//							return AttendanceCode.PERSONAL_DAY_UNAPPROVED;
+//						default:
+//							return null;
+//						}
+//					})
+//					.filter(j -> j != null)
 					.forEach(System.out::println);
 //					.collect(Collectors.toList());
 		}
