@@ -101,7 +101,7 @@ public class UserTimesheetBuilder {
 		}
 
 		if (timesheet.getExceptions() != null) {
-			timesheet.getExceptions().stream()
+			codes.addAll(timesheet.getExceptions().stream()
 					.map(Timesheet::getJobcode_id)
 					.map(l -> l.toString())
 					.map(k -> jobcodes.get(k))
@@ -125,7 +125,7 @@ public class UserTimesheetBuilder {
 						}
 					})
 					.filter(j -> j != null)
-					.collect(Collectors.toList());
+					.collect(Collectors.toList()));
 		}
 
 		return codes;
