@@ -1,5 +1,6 @@
 package com.richesoncabinets.hackberry.time.model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,12 +11,11 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.richesoncabinets.hackberry.time.configuration.TsheetsConfiguration;
+import com.richesoncabinets.hackberry.time.model.holiday.Holiday;
 import com.richesoncabinets.hackberry.time.model.tsheets.Jobcode;
 import com.richesoncabinets.hackberry.time.model.tsheets.Timesheet;
 import com.richesoncabinets.hackberry.time.model.tsheets.User;
@@ -39,17 +39,17 @@ public class UserTimesheetBuilder {
 	@Autowired
 	private TsheetsConfiguration tsheetsConfiguration;
 
-	public List<UserTimesheet> of(Collection<User> users, Collection<Timesheet> timesheets,
-			Map<String, Jobcode> jobCodes) {
+	public List<UserTimesheet> of(LocalDate date, Collection<User> users, Collection<Timesheet> timesheets,
+			Map<String, Jobcode> jobCodes, Map<LocalDate,Holiday> holidays) {
 		Map<Long, List<Timesheet>> userMappedTimesheets = timesheets.stream()
 				.collect(Collectors.groupingBy(Timesheet::getUser_id));
 
-		return users.stream().map(user -> of(user, userMappedTimesheets.get(user.getId()), jobCodes))
+		return users.stream().map(user -> of(date, user, userMappedTimesheets.get(user.getId()), jobCodes, holidays))
 				.sorted((a, b) -> a.getUser().getLast_name().compareToIgnoreCase(b.getUser().getLast_name()))
 				.collect(Collectors.toList());
 	}
 
-	public UserTimesheet of(User user, Collection<Timesheet> timesheets, Map<String, Jobcode> jobCodes) {
+	public UserTimesheet of(LocalDate date, User user, Collection<Timesheet> timesheets, Map<String, Jobcode> jobCodes, Map<LocalDate,Holiday> holidays) {
 		UserTimesheet userTimesheet = new UserTimesheet();
 		userTimesheet.setUser(user);
 
@@ -80,12 +80,12 @@ public class UserTimesheetBuilder {
 			userTimesheet.setExceptions(timesheetsPartitionedByExceptionJobCode.get(true));
 		}
 
-		userTimesheet.setAttendanceCodes(evaluateAttendance(userTimesheet,jobCodes));
+		userTimesheet.setAttendanceCodes(evaluateAttendance(date, userTimesheet,jobCodes, holidays));
 
 		return userTimesheet;
 	}
 
-	public List<AttendanceCode> evaluateAttendance(UserTimesheet timesheet, Map<String,Jobcode> jobcodes) {
+	public List<AttendanceCode> evaluateAttendance(LocalDate date, UserTimesheet timesheet, Map<String,Jobcode> jobcodes, Map<LocalDate,Holiday> holidays) {
 		List<AttendanceCode> codes = new ArrayList<>();
 
 		if (timesheet.getClockInTime() != null) {
@@ -94,6 +94,10 @@ public class UserTimesheetBuilder {
 			} else if (timesheet.getClockInTime().toLocalTime().isAfter(LocalTime.of(7, 30, 0, 0))) {
 				codes.add(AttendanceCode.LATE);
 			}
+		}
+		else if (timesheet.getClockInTime() == null && holidays.containsKey(date))
+		{
+			codes.add(AttendanceCode.UNPAID_HOLIDAY);
 		}
 		else
 		{
@@ -126,6 +130,10 @@ public class UserTimesheetBuilder {
 					})
 					.filter(j -> j != null)
 					.collect(Collectors.toList()));
+		}
+		
+		if(codes.contains(AttendanceCode.HOLIDAY)) {
+			codes.remove(AttendanceCode.UNPAID_HOLIDAY);
 		}
 
 		return codes;

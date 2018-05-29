@@ -47,7 +47,6 @@ public class TsheetsService {
 		try {
 			for (int page = 2; pageSize.apply(result.getResults()) == 50; page++) {
 				String pagedQuery = queryString + "&page=" + page;
-				System.out.println(pagedQuery);
 				result = executeGet(endpoint, pagedQuery, resultClass);
 				cumulativeResult.merge(result);
 			}
